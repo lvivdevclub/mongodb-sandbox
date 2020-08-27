@@ -1,0 +1,76 @@
+version: "3.4"
+services:
+  mongodb-sandbox:
+    hostname: mongodb-sandbox
+    build: ./
+    restart: always
+    networks:
+      - mongo
+    links:
+      - mongo1
+      - mongo2
+      - mongo3
+  mongo1:
+    hostname: mongo1
+    container_name: localmongo1
+    image: mongo
+    expose:
+      - 27017
+    ports:
+      - 27011:27017
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    links:
+      - mongo2
+      - mongo3
+    volumes:
+      - data1:/data/db
+      - ./scripts:/docker-entrypoint-initdb.d
+#    healthcheck:
+#      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo  --quiet) -eq 1
+#      interval: 10s
+#      start_period: 30s
+    networks:
+      - mongo
+  mongo2:
+    hostname: mongo2
+    container_name: localmongo2
+    image: mongo
+    expose:
+      - 27017
+    ports:
+      - 27012:27017
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    volumes:
+      - data2:/data/db
+#    healthcheck:
+#      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo --quiet) -eq 1
+#      interval: 10s
+#      start_period: 30s
+    networks:
+      - mongo
+  mongo3:
+    hostname: mongo3
+    container_name: localmongo3
+    image: mongo
+    expose:
+      - 27017
+    ports:
+      - 27013:27017
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    volumes:
+      - data3:/data/db
+#    healthcheck:
+#      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo  --quiet) -eq 1
+#      interval: 10s
+#      start_period: 30s
+    networks:
+      - mongo
+volumes:
+  data1:
+  data2:
+  data3:
+networks:
+  mongo:
