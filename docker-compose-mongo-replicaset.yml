@@ -25,11 +25,11 @@ services:
       - mongo3
     volumes:
       - data1:/data/db
-      - ./scripts:/docker-entrypoint-initdb.d
-#    healthcheck:
-#      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo  --quiet) -eq 1
-#      interval: 10s
-#      start_period: 30s
+      - ./script:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: test $$(echo "rs.status().ok" | mongo  --quiet) -eq 1
+      interval: 30s
+      start_period: 600s
     networks:
       - mongo
   mongo2:
@@ -44,10 +44,10 @@ services:
     entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
     volumes:
       - data2:/data/db
-#    healthcheck:
-#      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo --quiet) -eq 1
-#      interval: 10s
-#      start_period: 30s
+    healthcheck:
+      test: test $$(echo "rs.status().ok" | mongo --quiet) -eq 1
+      interval: 30s
+      start_period: 600s
     networks:
       - mongo
   mongo3:
@@ -62,10 +62,10 @@ services:
     entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
     volumes:
       - data3:/data/db
-#    healthcheck:
-#      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo  --quiet) -eq 1
-#      interval: 10s
-#      start_period: 30s
+    healthcheck:
+      test: test $$(echo "rs.status().ok" | mongo  --quiet) -eq 1
+      interval: 30s
+      start_period: 600s
     networks:
       - mongo
 volumes:
